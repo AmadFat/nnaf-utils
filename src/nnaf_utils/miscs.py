@@ -4,16 +4,41 @@ def dict2str(**kwargs):
     kwargs.items()
     return ', '.join([f"{k}={v}" for k, v in kwargs.items()])
 
-def refresh_dir(dir: StrPath, leave_empty: bool = True):
-    if isinstance(dir, str):
-        dir = Path(dir)
-    if dir.exists():
-        for item in dir.iterdir():
-            if item.is_dir():
-                refresh_dir(item, leave_empty=False)
-            else:
-                item.unlink()
+def refresh_obj(obj: StrPath, leave_empty: bool = True):
+    if isinstance(obj, str):
+        obj = Path(obj)
+
+    if obj.is_symlink():
+        try:
+            tgt = obj.resolve(strict=True)
+            refresh_obj(tgt, leave_empty=leave_empty)
+            if not leave_empty:
+                try:
+                    obj.unlink()
+                except OSError:
+                    pass
+        except FileNotFoundError:
+            try:
+                obj.unlink()
+            except OSError:
+                pass
+
+    elif obj.is_dir():
+        for sub in obj.iterdir():
+            refresh_obj(sub, leave_empty=False)
         if not leave_empty:
-            dir.rmdir()
-    elif leave_empty:
-        dir.mkdir(parents=True, exist_ok=True)
+            try:
+                obj.rmdir()
+            except OSError:
+                pass
+    
+    elif obj.is_file():
+        try:
+            obj.unlink()
+        except OSError:
+            pass
+        if leave_empty:
+            try:
+                obj.touch()
+            except OSError:
+                pass
