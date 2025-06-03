@@ -2,7 +2,6 @@ from .pytype import *
 
 
 class NodupRehashPool:
-
     def __init__(self, pool: set = None):
         self.pool = pool or set()
 
