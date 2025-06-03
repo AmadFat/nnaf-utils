@@ -3,8 +3,35 @@ name = "nnaf-utils"
 version = "0.1.0"
 readme = "README.md"
 requires-python = ">=3.11,<3.14"
-dependencies = []
+dependencies = [
+    "alive-progress>=3.2.0",
+    "joblib>=1.5.1",
+    "xxhash>=3.5.0",
+]
 
 [build-system]
 build-backend = "hatchling.build"
 requires = ["hatchling"]
+
+[tool.ruff]
+line-length = 120
+indent-width = 4
+target-version = "py313"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "UP",
+    "B",
+    "I",
+    "SIM",
+    "D"
+]
+ignore = [
+    "D100",
+    "D102",
+    "F401",
+    "F403",
+    "F405",
+]
